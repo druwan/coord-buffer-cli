@@ -1,13 +1,9 @@
-#!/usr/bin/python3
-
 import sys
 from shapely.geometry import Polygon
-from shapely.ops import transform
-import pyproj
-from functools import partial
+import utm
 
 
-def dmsToDecDeg(coord):
+def toDecDegCoords(coord):
     if len(coord) > 7:
         coord = coord[1:]
     degrees = int(coord[:2])
@@ -19,34 +15,6 @@ def dmsToDecDeg(coord):
     return dd if direction in ["N", "E"] else -dd
 
 
-def createPolygon(coords):
-    # Convert DMS coords to decimal degree
-    dd_coords = [(dmsToDecDeg(coord[:7]), dmsToDecDeg(coord[8:])) for coord in coords]
-    # Create Shapely Polygon
-    poly = Polygon(dd_coords)
-    # Set up CRS
-    wgs84 = pyproj.CRS("epsg:4326")
-    projection = partial(pyproj.transform, wgs84, wgs84)
-    # Project WGS onto OG Polygon
-    polygon = transform(projection, poly)
-    return polygon
-
-
-def nmToDD(buffer_range):
-    # Create the range in decimal degrees, approximation!
-    return buffer_range / 60
-
-
-def addBufferToPolygon(polygon, bufferSize):
-    bufferPolygon = polygon.buffer(
-        nmToDD(bufferSize), join_style="mitre", mitre_limit=2
-    )
-    wgs84 = pyproj.CRS("epsg:4326")
-    projection = partial(pyproj.transform, wgs84, wgs84)
-    bufferedPolygon = transform(projection, bufferPolygon)
-    return bufferedPolygon
-
-
 def decDegToDMS(coord):
     degrees = int(coord)
     minutes = (coord - degrees) * 60
@@ -54,7 +22,7 @@ def decDegToDMS(coord):
     return f"{degrees:02d}{int(minutes):02d}{int(seconds):02d}"
 
 
-def decDegToDMSString(coord):
+def toDMSCoords(coord):
     lat = coord[0]
     lon = coord[1]
     return f"{decDegToDMS(lat)}N 0{decDegToDMS(lon)}E"
@@ -63,6 +31,10 @@ def decDegToDMSString(coord):
 def readCoords(filename):
     with open(filename, "r") as file:
         return [(line.strip()) for line in file]
+
+
+def bufferInNm(bufferSize):
+    return bufferSize * 1852
 
 
 def main():
@@ -78,25 +50,38 @@ def main():
     except IndexError:
         print(f"Requires an input file with coords")
         exit(0)
-
     # Read coordinates from the file
     coordsDMS = readCoords(filename)
+    # Save them in decimal degree
+    latLonDdCoords = [
+        (toDecDegCoords(coords[:7]), toDecDegCoords(coords[8:])) for coords in coordsDMS
+    ]
 
-    # Create a Shapely polygon from DMS coordinates
-    polygonOG = createPolygon(coordsDMS)
+    utmCoords = []
+    # Convert & Save as UTM format
+    for point in latLonDdCoords:
+        easting, northing, zone_number, zone_letter = utm.from_latlon(
+            point[0], point[1]
+        )
+        utmCoords.append((easting, northing))
 
-    # Add a buffer to the polygon
-    bufferedPolygon = addBufferToPolygon(polygonOG, bufferSize)
+    # Create the polygon
+    utmPolygon = Polygon(tuple(utmCoords))
+    # Add buffer
+    bufferedPolygon = utmPolygon.buffer(
+        distance=bufferInNm(bufferSize), cap_style="square", join_style="mitre"
+    )
 
-    # Get the exterior coordinates of the buffered polygon
-    bufferedCoordsOut = list(bufferedPolygon.exterior.coords)
+    # Save the buffered coordinates
+    bufferedUTMCoords = []
+    for point in list(bufferedPolygon.exterior.coords):
+        latitude, longitude = utm.to_latlon(
+            point[0], point[1], zone_number, zone_letter
+        )
+        bufferedUTMCoords.append([latitude, longitude])
 
-    # Convert buffered coordinates to DMS format
-    bufferedCoordsDMS = [decDegToDMSString(coord) for coord in bufferedCoordsOut]
-
-    # Print the buffered coordinates
-    for coord in bufferedCoordsDMS:
-        print(coord)
+    # Convert and print the result
+    [print(toDMSCoords(coord)) for coord in bufferedUTMCoords]
 
 
 if __name__ == "__main__":
