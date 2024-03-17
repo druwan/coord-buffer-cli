@@ -63,10 +63,10 @@ def main():
         easting, northing, zone_number, zone_letter = utm.from_latlon(
             point[0], point[1]
         )
-        utmCoords.append((easting, northing))
+        utmCoords.append((easting, northing, zone_number, zone_letter))
 
     # Create the polygon
-    utmPolygon = Polygon(tuple(utmCoords))
+    utmPolygon = Polygon(tuple(utmCoords[0:1]))
     # Add buffer
     bufferedPolygon = utmPolygon.buffer(
         distance=bufferInNm(bufferSize), cap_style="square", join_style="mitre"
