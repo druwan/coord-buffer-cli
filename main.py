@@ -33,8 +33,11 @@ def readCoords(filename):
         return [(line.strip()) for line in file]
 
 
-def bufferInNm(bufferSize):
-    return bufferSize * 1852
+def bufferInNm(bufferDistance):
+    """
+    Take the Distance in Nautical Miles and returns it in Meters
+    """
+    return bufferDistance * 1852 * 2
 
 
 def main():
@@ -56,43 +59,34 @@ def main():
     latLonDdCoords = [
         (toDecDegCoords(coords[:7]), toDecDegCoords(coords[8:])) for coords in coordsDMS
     ]
+    # Reordered for GeoPandas
     lonLatDdCoords = [
         [toDecDegCoords(coords[8:]), toDecDegCoords(coords[:7])] for coords in coordsDMS
     ]
 
-    polygon_geom = Polygon(lonLatDdCoords)
-    polygon = gpd.GeoDataFrame(
-        index=[0], crs="epsg:4326", geometry=[gpd.GeoSeries(polygon_geom)]
-    )
-    print(polygon)
-    polygon.to_crs(crs="epsg:4326").buffer(bufferSize)
-    print(polygon)
-
-    utmCoords = []
-    # Convert & Save as UTM format
-    for point in latLonDdCoords:
-        easting, northing, zone_number, zone_letter = utm.from_latlon(
-            point[0], point[1]
-        )
-        utmCoords.append((easting, northing, zone_number, zone_letter))
-
     # Create the polygon
-    utmPolygon = Polygon(tuple(utmCoords[0:1]))
-    # Add buffer
-    bufferedPolygon = utmPolygon.buffer(
-        distance=bufferInNm(bufferSize), cap_style="square", join_style="mitre"
+    geoPandasPolygon = gpd.GeoDataFrame(
+        index=[0], geometry=[Polygon(lonLatDdCoords)], crs="EPSG:4326"
     )
+    # Reproject it with meters
+    geoPandasPolygon = geoPandasPolygon.to_crs(epsg=3857)
+    # Add buffer
+    geoPandasPolygonBuffered = geoPandasPolygon.buffer(
+        distance=bufferInNm(bufferSize), join_style=2
+    )
+
+    # Reproject it back into latlong
+    newBufferPolygon = geoPandasPolygonBuffered.to_crs(epsg=4326)
 
     # Save the buffered coordinates
-    bufferedUTMCoords = []
-    for point in list(bufferedPolygon.exterior.coords):
-        latitude, longitude = utm.to_latlon(
-            point[0], point[1], zone_number, zone_letter
-        )
-        bufferedUTMCoords.append([latitude, longitude])
+    bufferedlonLatCoords = []
+    coordDF = newBufferPolygon.get_coordinates()
+    for idx, row in coordDF.iterrows():
+        latitude, longitude = row[idx], row[idx + 1]
+        bufferedlonLatCoords.append([longitude, latitude])
 
     # Convert and print the result
-    [print(toDMSCoords(coord)) for coord in bufferedUTMCoords]
+    [print(toDMSCoords(coord)) for coord in bufferedlonLatCoords]
 
 
 if __name__ == "__main__":
