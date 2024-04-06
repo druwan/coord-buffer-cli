@@ -1,6 +1,6 @@
 import sys
 from shapely.geometry import Polygon
-import utm
+import geopandas as gpd
 
 
 def toDecDegCoords(coord):
@@ -56,6 +56,17 @@ def main():
     latLonDdCoords = [
         (toDecDegCoords(coords[:7]), toDecDegCoords(coords[8:])) for coords in coordsDMS
     ]
+    lonLatDdCoords = [
+        [toDecDegCoords(coords[8:]), toDecDegCoords(coords[:7])] for coords in coordsDMS
+    ]
+
+    polygon_geom = Polygon(lonLatDdCoords)
+    polygon = gpd.GeoDataFrame(
+        index=[0], crs="epsg:4326", geometry=[gpd.GeoSeries(polygon_geom)]
+    )
+    print(polygon)
+    polygon.to_crs(crs="epsg:4326").buffer(bufferSize)
+    print(polygon)
 
     utmCoords = []
     # Convert & Save as UTM format
