@@ -1,9 +1,12 @@
-## Coords Buffer
+# Coords Buffer
 
-Add a buffer (in nautical miles) to any file containing WGS84 DMS coordinates.
+Fetches TMA geojson data from lfv echarts, creates files and add a option \
+to create a buffer around a TMA.
 
-### Dependencies
+Add a buffer (in nautical miles) around a TMA.
+
+## Dependencies
+
+Geopandas
 
 Shapely
-
-UTM
