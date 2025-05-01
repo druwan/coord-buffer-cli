@@ -1,10 +1,11 @@
 import json
 import os
-import requests
 import sys
-from shapely.geometry import Polygon
 from io import BytesIO
+
 import geopandas as gpd
+import requests
+from shapely.geometry import Polygon
 
 # Constants
 BUFFER_MULTIPLIER = 1852
@@ -12,11 +13,11 @@ DEFAULT_EPSG = 4326  # WGS84
 METRIC_EPSG = 3006
 
 
-def fetch_tmas():
+def fetch_tmas(EPSG=DEFAULT_EPSG):
     """
-    Scrape TMAs from echarts
+    Fetch TMAs from echarts
     """
-    url = "https://daim.lfv.se/geoserver/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=mais:TMAS,mais:TMAW&undefined=&outputFormat=application/json&srsName=EPSG:3857"
+    url = f"https://daim.lfv.se/geoserver/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=mais:TMAS,mais:TMAW&undefined=&outputFormat=application/json&srsName=EPSG:{EPSG}"
     resp = requests.get(url)
     if resp.status_code == 200:
         return resp.content
