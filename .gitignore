@@ -1,4 +1,6 @@
-.venv
-coords.txt
-*.geojson
 .DS_Store
+.env
+.venv
+*.geojson
+coords.txt
+__pycache__
