@@ -17,6 +17,7 @@ dependencies = [
     "numpy==1.26.4",
     "packaging==24.0",
     "pandas==2.2.1",
+    "psycopg[binary]>=3.2.7",
     "pyproj==3.6.1",
     "python-dateutil==2.9.0.post0",
     "python-dotenv>=1.1.0",
@@ -35,3 +36,7 @@ dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
 ]
+[project.scripts]
+coord-buffer = "coord_buffer.cli:main"
+[tool.uv]
+package = true
