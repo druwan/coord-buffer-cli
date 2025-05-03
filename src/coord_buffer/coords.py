@@ -1,6 +1,6 @@
 import re
 
-from .config import DEFAULT_EPSG
+from coord_buffer.config import DEFAULT_EPSG
 
 
 def dms_to_dd_coords(coord):
@@ -23,7 +23,7 @@ def to_dms_coords(coord):
     lat, lon = coord
     lat_dir = "N" if lat >= 0 else "S"
     lon_dir = "E" if lon >= 0 else "W"
-    return f"{dd_to_dms(lat)}{lat_dir} {dd_to_dms(lon)}{lon_dir}"
+    return f"{dd_to_dms(lat)}{lat_dir} 0{dd_to_dms(lon)}{lon_dir}"
 
 
 def to_wgs84(geo_df):
