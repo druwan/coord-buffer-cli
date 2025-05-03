@@ -2,5 +2,6 @@
 .env
 .venv
 *.geojson
+*.egg-info
 coords.txt
 __pycache__

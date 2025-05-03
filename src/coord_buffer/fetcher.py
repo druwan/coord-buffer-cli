@@ -1,10 +1,11 @@
 import requests
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from .config import TMA_URL
+from coord_buffer.config import DEFAULT_EPSG, TMA_URL
 
 
-def fetch_tmas(EPSG=3857, url=None):
+def fetch_tmas(epsg=DEFAULT_EPSG, url=None):
+    """Fetch TMAs from WFS service."""
     url = url or TMA_URL
     params = {
         "service": "WFS",
@@ -12,7 +13,7 @@ def fetch_tmas(EPSG=3857, url=None):
         "request": "GetFeature",
         "typename": "mais:TMAS,mais:TMAW",
         "outputFormat": "application/json",
-        "srsName": f"EPSG:{EPSG}",
+        "srsName": f"EPSG:{epsg}",
     }
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
