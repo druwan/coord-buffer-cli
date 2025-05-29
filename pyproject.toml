@@ -1,43 +1,40 @@
 [project]
-name = "coord-buffer"
-version = "0.1.0"
-description = "App that takes user coordinates & buffer range as input and returns the new coordinates"
+name = "coord-buffer-cli"
+version = "1.0.0"
+description = "CLI that takes user coordinates & buffer range as input and returns the new coordinates"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "attrs==23.2.0",
-    "certifi==2024.2.2",
-    "charset-normalizer==3.3.2",
-    "click==8.1.7",
-    "click-plugins==1.1.1",
-    "cligj==0.7.2",
-    "fiona==1.9.6",
-    "geopandas==0.14.3",
-    "idna==3.10",
-    "numpy==1.26.4",
-    "packaging==24.0",
-    "pandas==2.2.1",
-    "psycopg[binary]>=3.2.7",
-    "pyproj==3.6.1",
-    "python-dateutil==2.9.0.post0",
-    "python-dotenv>=1.1.0",
-    "pytz==2024.1",
-    "requests==2.32.3",
-    "ruff>=0.11.7",
-    "shapely==2.0.3",
-    "six==1.16.0",
-    "tabulate>=0.9.0",
-    "tenacity>=9.1.2",
-    "tzdata==2024.1",
-    "urllib3==2.2.3",
+  "attrs==23.2.0",
+  "certifi==2024.2.2",
+  "charset-normalizer==3.3.2",
+  "click==8.1.7",
+  "click-plugins==1.1.1",
+  "cligj==0.7.2",
+  "fiona==1.9.6",
+  "geopandas==0.14.3",
+  "idna==3.10",
+  "numpy==1.26.4",
+  "packaging==24.0",
+  "pandas==2.2.1",
+  "psycopg[binary]>=3.2.7",
+  "pyproj==3.6.1",
+  "python-dateutil==2.9.0.post0",
+  "python-dotenv>=1.1.0",
+  "pytz==2024.1",
+  "requests==2.32.3",
+  "ruff>=0.11.7",
+  "shapely==2.0.3",
+  "six==1.16.0",
+  "tabulate>=0.9.0",
+  "tenacity>=9.1.2",
+  "tzdata==2024.1",
+  "urllib3==2.2.3",
 ]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.3.5",
-    "pytest-cov>=6.1.1",
-]
+dev = ["pytest>=8.3.5", "pytest-cov>=6.1.1"]
 [project.scripts]
-coord-buffer = "coord_buffer.cli:main"
+coord-buffer-cli = "coord_buffer_cli.cli:main"
 [tool.uv]
 package = true

@@ -1,6 +1,6 @@
 import argparse
 
-from coord_buffer.utils import (
+from coord_buffer_cli.utils import (
     buffer_polygon,
     list_coords_from_db,
     logger,

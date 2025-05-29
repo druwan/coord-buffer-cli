@@ -8,7 +8,12 @@ import psycopg
 from shapely.geometry import Polygon
 from tabulate import tabulate
 
-from coord_buffer.config import BUFFER_MULTIPLIER, DB_PARAMS, DEFAULT_EPSG, METRIC_EPSG
+from coord_buffer_cli.config import (
+    BUFFER_MULTIPLIER,
+    DB_PARAMS,
+    DEFAULT_EPSG,
+    METRIC_EPSG,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

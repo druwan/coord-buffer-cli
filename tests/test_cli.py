@@ -4,7 +4,7 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
-from coord_buffer.cli import main
+from coord_buffer_cli.cli import main
 
 
 @pytest.fixture
@@ -31,8 +31,8 @@ def mock_geodataframe():
 def test_list_argument_triggers_db_listing(mock_args):
     mock_args.list = True
     with (
-        patch("coord_buffer.cli.parse_args", return_value=mock_args),
-        patch("coord_buffer.cli.list_coords_from_db") as mock_list,
+        patch("coord_buffer_cli.cli.parse_args", return_value=mock_args),
+        patch("coord_buffer_cli.cli.list_coords_from_db") as mock_list,
     ):
         main()
         mock_list.assert_called_once()
@@ -42,14 +42,14 @@ def test_msid_argument_triggers_db_read(mock_args, mock_geodataframe):
     mock_args.msid = "123"
     mock_args.buffer = 10
     with (
-        patch("coord_buffer.cli.parse_args", return_value=mock_args),
+        patch("coord_buffer_cli.cli.parse_args", return_value=mock_args),
         patch(
-            "coord_buffer.cli.read_coords_from_db", return_value=[[0, 0], [1, 1]]
+            "coord_buffer_cli.cli.read_coords_from_db", return_value=[[0, 0], [1, 1]]
         ) as mock_read_db,
         patch(
-            "coord_buffer.cli.buffer_polygon", return_value=mock_geodataframe
+            "coord_buffer_cli.cli.buffer_polygon", return_value=mock_geodataframe
         ) as mock_buffer,
-        patch("coord_buffer.cli.to_dms_coords") as mock_dms,
+        patch("coord_buffer_cli.cli.to_dms_coords") as mock_dms,
     ):
         main()
         mock_read_db.assert_called_once_with("123")
@@ -61,14 +61,14 @@ def test_input_file_argument_triggers_file_read(mock_args, mock_geodataframe):
     mock_args.input_file = "test.geojson"
     mock_args.buffer = 5
     with (
-        patch("coord_buffer.cli.parse_args", return_value=mock_args),
+        patch("coord_buffer_cli.cli.parse_args", return_value=mock_args),
         patch(
-            "coord_buffer.cli.read_coords", return_value=[[0, 0], [1, 1]]
+            "coord_buffer_cli.cli.read_coords", return_value=[[0, 0], [1, 1]]
         ) as mock_read_file,
         patch(
-            "coord_buffer.cli.buffer_polygon", return_value=mock_geodataframe
+            "coord_buffer_cli.cli.buffer_polygon", return_value=mock_geodataframe
         ) as mock_buffer,
-        patch("coord_buffer.cli.to_dms_coords") as mock_dms,
+        patch("coord_buffer_cli.cli.to_dms_coords") as mock_dms,
     ):
         main()
         mock_read_file.assert_called_once_with("test.geojson")
@@ -79,9 +79,9 @@ def test_input_file_argument_triggers_file_read(mock_args, mock_geodataframe):
 def test_exception_handling_logs_error(mock_args):
     mock_args.input_file = "test.geojson"
     with (
-        patch("coord_buffer.cli.parse_args", return_value=mock_args),
-        patch("coord_buffer.cli.read_coords", side_effect=Exception("Boom!")),
-        patch("coord_buffer.cli.logger.error") as mock_log,
+        patch("coord_buffer_cli.cli.parse_args", return_value=mock_args),
+        patch("coord_buffer_cli.cli.read_coords", side_effect=Exception("Boom!")),
+        patch("coord_buffer_cli.cli.logger.error") as mock_log,
     ):
         main()
         mock_log.assert_called_once()
