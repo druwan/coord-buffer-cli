@@ -5,8 +5,8 @@ Fetches geojson data based on LFV echarts and returns new buffer coordiantes bas
 ## Usage
 
 ```sh
-uv run coord-buffer -h 
-usage: coord-buffer [-h] [-l] [--msid MSID] [-f INPUT_FILE] [-b BUFFER]
+uv run coord-buffer-cli -h 
+usage: coord-buffer-cli [-h] [-l] [--msid MSID] [-f INPUT_FILE] [-b BUFFER]
 
 Creates a specified buffer around user specified area.
 
