@@ -1,12 +1,22 @@
 # Coords Buffer
 
-Fetches TMA geojson data from lfv echarts, creates files and add a option \
-to create a buffer around a TMA.
+Fetches geojson data based on LFV echarts and returns new buffer coordiantes based on user input distance (nautical miles).
 
-Add a buffer (in nautical miles) around a TMA.
+## Usage
 
-## Dependencies
+```sh
+uv run coord-buffer -h 
+usage: coord-buffer [-h] [-l] [--msid MSID] [-f INPUT_FILE] [-b BUFFER]
 
-Geopandas
+Creates a specified buffer around user specified area.
 
-Shapely
+options:
+  -h, --help            show this help message and exit
+  -l, --list            Prints list of available geometries and their
+                        id.
+  --msid MSID           Get coords for the selected geometries.
+  -f INPUT_FILE, --input_file INPUT_FILE
+                        Path to a GeoJSON file with coordinates
+  -b BUFFER, --buffer BUFFER
+                        Buffer size in NM (default: 0)
+```
