@@ -59,7 +59,9 @@ def buffer_polygon(coords, buffer_size_nm):
     gdf = gpd.GeoDataFrame(geometry=[Polygon(coords)], crs=f"EPSG:{DEFAULT_EPSG}")
     gdf = gdf.to_crs(epsg=METRIC_EPSG)
     buffered = gdf.buffer(
-        distance=buffer_size_nm * BUFFER_MULTIPLIER, single_sided=True, join_style=2
+        distance=buffer_size_nm * BUFFER_MULTIPLIER,
+        single_sided=True,
+        join_style="mitre",
     )
     return buffered.to_crs(epsg=DEFAULT_EPSG)
 
@@ -86,9 +88,10 @@ def read_coords(filename):
 
 def list_coords_from_db():
     query = """
-        SELECT typeofarea, msid, nameofarea, positionindicator
+        SELECT msid, nameofarea
         FROM aip_data
-        ORDER BY typeofarea, nameofarea, positionindicator;
+        WHERE typeofarea = 'TMAW'
+        ORDER BY nameofarea;
     """
     with psycopg.connect(**DB_PARAMS) as conn:
         with conn.cursor() as cur:
@@ -99,9 +102,7 @@ def list_coords_from_db():
 
             print(
                 tabulate(
-                    rows,
-                    headers=["Type of Area", "MSID", "Name of Area", "ICAO"],
-                    tablefmt="pretty",
+                    rows, headers=["MSID", "TMA"], tablefmt="pretty", colalign=("left",)
                 )
             )
             return rows
