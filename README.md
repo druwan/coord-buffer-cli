@@ -1,22 +1,11 @@
 # Coords Buffer
 
-Fetches geojson data based on LFV echarts and returns new buffer coordiantes based on user input distance (nautical miles).
+Fetches GeoJSON data based on [LFV echarts](https://daim.lfv.se/echarts) and returns new buffered coordinates based on user input buffer distance (nautical miles).
 
 ## Usage
 
-```sh
-uv run coord-buffer-cli -h 
-usage: coord-buffer-cli [-h] [-l] [--msid MSID] [-f INPUT_FILE] [-b BUFFER]
+![Show available TMAs](./public/list.png "Listing TMAs")
 
-Creates a specified buffer around user specified area.
+## Partial return
 
-options:
-  -h, --help            show this help message and exit
-  -l, --list            Prints list of available geometries and their
-                        id.
-  --msid MSID           Get coords for the selected geometries.
-  -f INPUT_FILE, --input_file INPUT_FILE
-                        Path to a GeoJSON file with coordinates
-  -b BUFFER, --buffer BUFFER
-                        Buffer size in NM (default: 0)
-```
+![Example Output](./public/example.png "Example output")

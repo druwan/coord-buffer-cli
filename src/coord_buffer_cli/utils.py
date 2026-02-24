@@ -18,7 +18,6 @@ from coord_buffer_cli.config import (
 
 
 def print_coordinates(coord_dataframe):
-    console.print(f"\n[bold green]Buffered Polygon • {args.buffer} NM[/bold green]\n")
     for _, row in coord_dataframe.iterrows():
         dms = to_dms_coords([row["y"], row["x"]])
         lat, lon = dms.split()
@@ -122,7 +121,7 @@ def list_coords_from_db():
 
 def read_coords_from_db(msid):
     query = """
-        SELECT ST_AsGeoJSON(geom) as geojson
+        SELECT ST_AsGeoJSON(geom) as geojson, nameofarea
         FROM aip_data
         where msid = %s;
     """
@@ -135,4 +134,5 @@ def read_coords_from_db(msid):
 
             geojson_str = rows[0][0]
             geojson = json.loads(geojson_str)
-            return geojson["coordinates"][0]
+            tma_name = rows[0][1]
+            return geojson["coordinates"][0], tma_name

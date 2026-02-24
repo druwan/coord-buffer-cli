@@ -22,7 +22,7 @@ DB_PARAMS = {
 }
 
 
-logging.basicConfig(level="INFO", format="%(message)s", handlers=[RichHandler()])
+logging.basicConfig(level="DEBUG", format="%(message)s", handlers=[RichHandler()])
 logger = logging.getLogger(__name__)
 
 console = Console()
