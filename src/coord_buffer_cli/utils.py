@@ -1,22 +1,29 @@
 import json
-import logging
 import re
 import unicodedata
 
 import geopandas as gpd
 import psycopg
+from rich.table import Table
+from rich.text import Text
 from shapely.geometry import Polygon
-from tabulate import tabulate
 
 from coord_buffer_cli.config import (
     BUFFER_MULTIPLIER,
     DB_PARAMS,
     DEFAULT_EPSG,
     METRIC_EPSG,
+    console,
 )
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
+def print_coordinates(coord_dataframe):
+    console.print(f"\n[bold green]Buffered Polygon • {args.buffer} NM[/bold green]\n")
+    for _, row in coord_dataframe.iterrows():
+        dms = to_dms_coords([row["y"], row["x"]])
+        lat, lon = dms.split()
+        line = Text.assemble((lat, "yellow"), (" ", ""), (lon, "cyan"))
+        console.print(line)
 
 
 def clean_file_name(name):
@@ -100,11 +107,16 @@ def list_coords_from_db():
             if not rows:
                 raise ValueError("No geometries found")
 
-            print(
-                tabulate(
-                    rows, headers=["MSID", "TMA"], tablefmt="pretty", colalign=("left",)
-                )
-            )
+            table = Table(title="Available TMAs", header_style="bold magenta")
+            table.add_column("MSID", style="cyan", justify="center")
+            table.add_column("TMA", style="green", justify="left")
+
+            for (
+                msid,
+                name,
+            ) in rows:
+                table.add_row(str(msid), name)
+            console.print(table)
             return rows
 
 
