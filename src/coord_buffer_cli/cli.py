@@ -22,7 +22,7 @@ def main():
             coords, nameofarea = read_coords_from_db(args.msid)
         else:
             logger.info(f"Processing file: {args.input_file}")
-            coords = read_coords(args.input_file)
+            coords, nameofarea = read_coords(args.input_file)
 
         buffered_gdf = buffer_polygon(coords, args.buffer)
         coords_df = buffered_gdf.get_coordinates()
