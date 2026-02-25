@@ -4,8 +4,12 @@ Fetches GeoJSON data based on [LFV echarts](https://daim.lfv.se/echarts) and ret
 
 ## Usage
 
+![Help Menu](./public/help.png "Help menu")
+
+## List TMA's from db
+
 ![Show available TMAs](./public/list.png "Listing TMAs")
 
-## Partial return
+## Output from script, copy & paste into [LFV echarts](https://daim.lfv.se/echarts)
 
 ![Example Output](./public/example.png "Example output")
