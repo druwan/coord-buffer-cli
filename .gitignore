@@ -5,3 +5,4 @@
 *.egg-info
 coords.txt
 __pycache__
+.coverage
