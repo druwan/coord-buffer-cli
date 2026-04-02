@@ -7,7 +7,6 @@ import geopandas as gpd
 import psycopg
 from rich.table import Table
 from rich.text import Text
-from shapely import geometry
 from shapely.geometry import Polygon
 
 from coord_buffer_cli.config import (
@@ -82,28 +81,27 @@ def read_coords(filename):
         if not geojson_data.get("features"):
             raise ValueError("GeoJSON file has no features")
 
-        coords = []
-        nameofarea = None
+        features_coord = []
 
         for feature in geojson_data["features"]:
-            if not nameofarea:
-                nameofarea = feature.get("properties", {}).get("NAME") or feature.get(
-                    "properties", {}
-                ).get("name")
-        geometry = feature.get("geometry", {})
-        if geometry.get("type") != "Polygon":
-            raise ValueError(
-                f"Unsupported geometry type: {feature['geometry']['type']}"
+            nameofarea = (
+                feature.get("properties", {}).get("NAME")
+                or feature.get("properties", {}).get("name")
+                or Path(filename).stem
             )
-        for polygon in geometry.get("coordinates", []):
-            for coord in polygon:
-                if not isinstance(coord, list) or len(coord) != 2:
-                    raise ValueError(f"Invalid coordinate format: {coord}")
-                coords.append(coord)
 
-        if not nameofarea:
-            nameofarea = Path(filename).stem
-        return coords, nameofarea
+            geometry = feature.get("geometry", {})
+            if geometry.get("type") != "Polygon":
+                raise ValueError(f"Unsupported geometry type: {geometry.get('type')}")
+
+            coords = []
+            for polygon in geometry.get("coordinates", []):
+                for coord in polygon:
+                    if not isinstance(coord, list) or len(coord) != 2:
+                        raise ValueError(f"Invalid coordinate format: {coord}")
+                    coords.append(coord)
+            features_coord.append((coords, nameofarea))
+        return features_coord
 
 
 def list_coords_from_db():

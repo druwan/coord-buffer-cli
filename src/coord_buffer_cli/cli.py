@@ -20,17 +20,22 @@ def main():
         if args.msid:
             logger.info(f"Processing MSID: {args.msid}")
             coords, nameofarea = read_coords_from_db(args.msid)
+            features = [(coords, nameofarea)]
         else:
             logger.info(f"Processing file: {args.input_file}")
-            coords, nameofarea = read_coords(args.input_file)
+            features = read_coords(args.input_file)
 
-        buffered_gdf = buffer_polygon(coords, args.buffer)
-        coords_df = buffered_gdf.get_coordinates()
+        for coords, nameofarea in features:
+            buffered_gdf = buffer_polygon(coords, args.buffer)
+            coords_df = buffered_gdf.get_coordinates()
 
-        console.print(
-            f"\n[bold green]{nameofarea} Buffered • {args.buffer} NM[/bold green]\n"
-        )
-        print_coordinates(coords_df)
+            if args.buffer:
+                console.print(
+                    f"\n[bold green]{nameofarea} Buffered • {args.buffer} NM[/bold green]\n"
+                )
+            else:
+                console.print(f"\n[bold green]{nameofarea} Un-buffered[/bold green]\n")
+            print_coordinates(coords_df)
 
     except Exception as e:
         logger.error(f"Error processing file: {e}")
