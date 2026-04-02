@@ -65,7 +65,7 @@ def test_input_file_argument_triggers_file_read(mock_args, mock_geodataframe):
         patch("coord_buffer_cli.cli.parse_args", return_value=mock_args),
         patch(
             "coord_buffer_cli.cli.read_coords",
-            return_value=([[0, 0], [1, 1]], "test.geojson"),
+            return_value=[([[0, 0], [1, 1]], "test.geojson")],
         ) as mock_read_file,
         patch(
             "coord_buffer_cli.cli.buffer_polygon", return_value=mock_geodataframe
