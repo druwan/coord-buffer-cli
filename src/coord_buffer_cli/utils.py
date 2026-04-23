@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 import re
 import unicodedata
@@ -104,7 +105,30 @@ def read_coords(filename):
         return features_coord
 
 
+def get_last_update():
+    query = """
+        SELECT wef
+        FROM aip_data
+    """
+    with psycopg.connect(**DB_PARAMS) as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            rows = cur.fetchall()
+
+            if not rows:
+                raise ValueError("Missing last updated date")
+
+            dates = set(row[0] for row in rows)
+
+            if len(dates) > 1:
+                logging.warning(f"Multiple last updated dates found: {dates}")
+            else:
+                dates = dates.pop()
+            return dates
+
+
 def list_coords_from_db():
+    last_update = get_last_update()
     query = """
         SELECT msid, nameofarea
         FROM aip_data
@@ -118,7 +142,10 @@ def list_coords_from_db():
             if not rows:
                 raise ValueError("No geometries found")
 
-            table = Table(title="Available TMAs", header_style="bold magenta")
+            table = Table(
+                title=f"Available TMAs{f' - Last Updated {last_update if last_update else ""}'}",
+                header_style="bold magenta",
+            )
             table.add_column("MSID", style="cyan", justify="center")
             table.add_column("TMA", style="green", justify="left")
 
